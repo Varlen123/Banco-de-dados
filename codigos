@@ -1,0 +1,57 @@
+mkdir minha-api
+cd minha-api
+npm init -y
+npm install express mysql2 typescript @types/node @types/express @types/mysql2 ts-node nodemon
+
+Crie um arquivo tsconfig.json na raiz do seu projeto e adicione a seguinte configuração básica:
+
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "strict": true
+  }
+}
+
+Crie um arquivo db.ts para lidar com a conexão ao banco de dados MySQL:
+import mysql from 'mysql2/promise';
+
+export async function connect() {
+    return await mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'password',
+        database: 'login'
+    });
+}
+
+Crie um arquivo app.ts para configurar e criar a API:
+
+import express from 'express';
+import { connect } from './db';
+
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+// Rota de exemplo
+app.get('/', async (req, res) => {
+    const connection = await connect();
+    const [rows] = await connection.execute('SELECT * FROM usuarios');
+    res.json(rows);
+});
+
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+});
+
+Adicione um script no seu package.json para executar o servidor usando nodemon:
+"scripts": {
+    "start": "nodemon --exec ts-node src/app.ts"
+}
+
+Executar:
+npm start
+
